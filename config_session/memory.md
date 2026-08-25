@@ -45,4 +45,4 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 ## Último Checkpoint
 
-- *(se registrará tras el primer commit de bootstrap)*
+- **`ee27595`** — chore: bootstrap repositorio AuthCenter (root-commit: git init, .gitignore, AGENTS.md, rules ajustada regla 5 → `npm run build`, memory completo, scripts SQL 00–04 byte-idénticos al origen f307a1c de Gallos, plan versionado en docs/).
