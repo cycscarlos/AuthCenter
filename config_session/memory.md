@@ -13,7 +13,7 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 ## Decisiones confirmadas por el usuario (25/08)
 
-- D1 Supabase nuevo y dedicado (org urqswilspeawfploenne), NO galloslosindios. **AÚN SIN CREAR** — el usuario quiere hacer preguntas antes de crearlo.
+- D1 Supabase nuevo y dedicado. **AÚN SIN CREAR** — decisión de org tomada 25/08: irá a la org **cycs** (urqswilspeawfploenne) aprovechando la vacante tras eliminar cuerda-los-indios (límite 3 proyectos/org); misma región que galloslosindios; la org alchemy (AutoStock) queda intacta.
 - D2 Panel standalone en Vercel aparte.
 - D3 Tabla `productos` + `producto_id` FK; alta de productos por SQL.
 - D4 Un secreto por producto (`LICENSE_SECRET_AUTOSTOCK`, etc.), sin fallback, ≥32 chars.
@@ -34,7 +34,7 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
   3. Alta manual primer admin tras 02 (Authentication → INSERT con UUID).
   4. Probe REST: anon debe recibir 403 permission denied (= RLS activo día 1).
 - **Fase 2 (Edge Functions)** bloqueada hasta completar lo anterior.
-- **Pendiente externo:** issue en AutoStock — una tabla mal creada (el usuario lo resolverá antes de avanzar a integraciones).
+- **Pendiente externo:** issue en AutoStock — una tabla mal creada (aut_licenses, accidente del 25/08). Script de limpieza creado en el repo de Gallos (`scripts/AUTOSTOCK-limpieza-aut_licenses.sql`); el usuario lo ejecutará en el proyecto AUTOSTOCK antes de avanzar.
 
 ## Convenciones
 
