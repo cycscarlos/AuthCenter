@@ -1,0 +1,4 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["config_session/rules.md", "config_session/memory.md"]
+}

@@ -1,0 +1,17 @@
+# Dependencias / build
+node_modules/
+dist/
+
+# Entorno (NUNCA commitear secretos)
+.env
+.env.*
+!.env.example
+
+# Supabase local
+supabase/.temp/
+supabase/backups/
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+*.log
