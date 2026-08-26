@@ -7,7 +7,7 @@ Este proyecto es INDEPENDIENTE de Gallos-los-indios (repo hermano en `../Gallos-
 ## Estado actual
 
 - Bootstrap inicial: scripts SQL de BD (`scripts/`), plan maestro (`docs/plan-emisor-central-licencias.md`), configuración opencode.
-- El proyecto Supabase "AuthCenter" **aún NO está creado** (pendiente por el usuario).
+- Proyecto Supabase "AuthCenter" **CREADO** en la org alchemy (junto a AutoStock — el límite Free pasó a 2 proyectos/org). **Pendiente: ejecutar los scripts SQL 01→04 en él.**
 - Sin `package.json` todavía: el scaffold Vite llega con la Fase 3 del plan.
 
 ## Comandos

@@ -13,7 +13,8 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 ## Decisiones confirmadas por el usuario (25/08)
 
-- D1 Supabase nuevo y dedicado. **AÚN SIN CREAR** — decisión de org tomada 25/08: irá a la org **cycs** (urqswilspeawfploenne) aprovechando la vacante tras eliminar cuerda-los-indios (límite 3 proyectos/org); misma región que galloslosindios; la org alchemy (AutoStock) queda intacta.
+- D1 Supabase dedicado — **CREADO 25/08 en la org alchemy** (junto a AutoStock; Supabase limitó Free a 2 proyectos/org y cycs quedó descartada). URL/anon key en poder del usuario.
+- D1b Repo GitHub "AuthCenter" creado; remote aún sin linkear/pushear localmente.
 - D2 Panel standalone en Vercel aparte.
 - D3 Tabla `productos` + `producto_id` FK; alta de productos por SQL.
 - D4 Un secreto por producto (`LICENSE_SECRET_AUTOSTOCK`, etc.), sin fallback, ≥32 chars.
@@ -29,10 +30,9 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 - **Fase 0+1 COMPLETADA:** scripts SQL en `scripts/` (00 backup defensivo, 01 productos+seed, 02 usuarios admins, 03 aut_licenses con producto_id FK, 04 rate limit). Trasladados byte-idénticos desde Gallos (origen: commit `f307a1c` del repo de Gallos).
 - **PENDIENTE USUARIO (orden crítico):**
-  1. Preguntas previas → crear proyecto Supabase AuthCenter (D1) y anotar URL/anon key.
-  2. SQL Editor VERIFICANDO proyecto = AuthCenter → ejecutar 01 → 02 → 03 → 04 (00 opcional vacía), corriendo verificaciones comentadas tras cada uno.
-  3. Alta manual primer admin tras 02 (Authentication → INSERT con UUID).
-  4. Probe REST: anon debe recibir 403 permission denied (= RLS activo día 1).
+  1. SQL Editor VERIFICANDO proyecto = AuthCenter (org alchemy) → ejecutar 01 → 02 → 03 → 04 (00 opcional vacía), corriendo verificaciones comentadas tras cada uno.
+  2. Alta manual primer admin tras 02 (Authentication → INSERT con UUID).
+  3. Probe REST: anon debe recibir 403 permission denied (= RLS activo día 1).
 - **Fase 2 (Edge Functions)** bloqueada hasta completar lo anterior.
 - **Pendiente externo:** issue en AutoStock — una tabla mal creada (aut_licenses, accidente del 25/08). Script de limpieza creado en el repo de Gallos (`scripts/AUTOSTOCK-limpieza-aut_licenses.sql`); el usuario lo ejecutará en el proyecto AUTOSTOCK antes de avanzar.
 
