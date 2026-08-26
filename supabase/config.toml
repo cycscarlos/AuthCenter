@@ -1,0 +1,60 @@
+# Configuración Supabase — AuthCenter (emisor central de licencias)
+# Proyecto DEDICADO en la org alchemy. NO vincular a galloslosindios ni AutoStock.
+# Nota: este config.toml NO admite [functions.*.env]; los secretos se fijan con
+# `supabase secrets set` (LICENSE_SECRET_<PRODUCTO>).
+
+project_id = "AuthCenter"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+
+[edge_runtime]
+enabled = true
+policy = "per_worker"
+
+# ---------------------------------------------------------------------------
+# Edge Functions — autorización propia en cada función (verify_jwt=false)
+# ---------------------------------------------------------------------------
+
+[functions.create-license]
+enabled = true
+verify_jwt = false
+import_map = "./functions/create-license/deno.json"
+entrypoint = "./functions/create-license/index.ts"
+
+[functions.validate-license]
+enabled = true
+verify_jwt = false
+import_map = "./functions/validate-license/deno.json"
+entrypoint = "./functions/validate-license/index.ts"
