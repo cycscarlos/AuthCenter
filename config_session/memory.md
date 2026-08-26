@@ -29,11 +29,13 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 ## Estado actual
 
 - **Fase 0+1 COMPLETADA:** scripts SQL en `scripts/` (00 backup defensivo, 01 productos+seed, 02 usuarios admins, 03 aut_licenses con producto_id FK, 04 rate limit). Trasladados byte-idénticos desde Gallos (origen: commit `f307a1c` del repo de Gallos).
+- **Fase 2 CÓDIGO COMPLETO (`c51efc9`, checkpoint previo `cdf97bd`):** Edge Functions multi-producto en `supabase/functions/`. `_shared/license-keys.ts` portado con `getLicenseSecret(producto)` → lee `LICENSE_SECRET_<CODIGO>` (sin fallback, ≥32 chars, regex PRODUCTO_RE). `_shared/distributed-rate-limit.ts` port exacto; `rate-limit.ts` y `sanitize.ts` slim (solo lo usado). `create-license`: JWT → admin vía tabla usuarios → producto existe+activo → secreto del producto → reintento 23505 → inserta con producto_id. `validate-license`: rechazo barato→caro (formato clave → formato producto → producto BD → secreto → HMAC → licencia verificando producto_id); estados nuevos `producto_invalido`/`producto_inactivo`; fail-closed 503. `config.toml`: 2 funciones verify_jwt=false. esbuild parse OK (6 TS).
 - **PENDIENTE USUARIO (orden crítico):**
   1. SQL Editor VERIFICANDO proyecto = AuthCenter (org alchemy) → ejecutar 01 → 02 → 03 → 04 (00 opcional vacía), corriendo verificaciones comentadas tras cada uno.
   2. Alta manual primer admin tras 02 (Authentication → INSERT con UUID).
-  3. Probe REST: anon debe recibir 403 permission denied (= RLS activo día 1).
-- **Fase 2 (Edge Functions)** bloqueada hasta completar lo anterior.
+  3. Terminal del usuario: `supabase link --project-ref <REF>` → `supabase secrets set LICENSE_SECRET_AUTOSTOCK=<64hex> LICENSE_SECRET_MEDSTOCK=<64hex> LICENSE_SECRET_POSADAS=<64hex>` → deploy de las 2 funciones.
+  4. Smoke test validate-license: clave malformada → `formato_invalido`; clave 20-hex firma falsa + AUTOSTOCK → `firma_invalida`; producto fantasma → `producto_invalido`.
+  5. Probe REST: anon debe recibir 403 permission denied (= RLS activo día 1).
 - **Pendiente externo:** issue en AutoStock — una tabla mal creada (aut_licenses, accidente del 25/08). Script de limpieza creado en el repo de Gallos (`scripts/AUTOSTOCK-limpieza-aut_licenses.sql`); el usuario lo ejecutará en el proyecto AUTOSTOCK antes de avanzar.
 
 ## Convenciones
