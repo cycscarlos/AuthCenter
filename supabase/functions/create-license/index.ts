@@ -7,7 +7,7 @@
 // "AUTOSTOCK"); el producto debe existir y estar activo.
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { getIdentifier, RATE_LIMIT_CONFIGS } from "../_shared/rate-limit.ts";
 import {
   checkDistributedRateLimit,
@@ -77,26 +77,41 @@ serve(async (req) => {
     }
 
     // Autenticación obligatoria: verificar el JWT del llamador
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    if (!token) {
       return jsonError("Authorization header required", 401, rateLimitHeaders);
     }
 
-    const { data: { user: caller }, error: authError } =
-      await supabaseAdmin.auth.getUser(authHeader.replace("Bearer ", ""));
-
-    if (authError || !caller) {
-      return jsonError("Invalid or expired token", 401, rateLimitHeaders);
+    let jwtPayload: { sub?: string; exp?: number } | null = null;
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        jwtPayload = JSON.parse(atob(base64));
+      }
+    } catch {
+      jwtPayload = null;
     }
 
-    // Autorización: solo administradores del centro pueden emitir licencias
-    const { data: callerData } = await supabaseAdmin
-      .from("usuarios")
-      .select("rol")
-      .eq("id", caller.id)
-      .single();
+    if (!jwtPayload || !jwtPayload.sub) {
+      return jsonError("Token de autenticación inválido", 401, rateLimitHeaders);
+    }
 
-    if (callerData?.rol !== "admin") {
+    if (jwtPayload.exp && jwtPayload.exp < Math.floor(Date.now() / 1000)) {
+      return jsonError("Token expirado", 401, rateLimitHeaders);
+    }
+
+    const callerId = jwtPayload.sub;
+
+    // Autorización: solo administradores activos del centro pueden emitir licencias
+    const { data: callerData, error: callerError } = await supabaseAdmin
+      .from("usuarios")
+      .select("rol, activo")
+      .eq("id", callerId)
+      .maybeSingle();
+
+    if (callerError || !callerData || callerData.rol !== "admin" || !callerData.activo) {
       return jsonError(
         "No tienes permisos para emitir licencias",
         403,
@@ -217,7 +232,7 @@ serve(async (req) => {
           expires_at: expiresAt,
           notas,
           activada_en: fechaInicio ? new Date().toISOString() : null,
-          created_by: caller.id,
+          created_by: callerId,
         })
         .select()
         .single();

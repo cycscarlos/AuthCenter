@@ -14,7 +14,7 @@
 //             programada | expirada | activa
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { getIdentifier, RATE_LIMIT_CONFIGS } from "../_shared/rate-limit.ts";
 import {
   checkDistributedRateLimit,

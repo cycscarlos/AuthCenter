@@ -291,7 +291,8 @@ formLic.addEventListener('submit', async (e) => {
       toast('Licencia actualizada', 'ok');
     } else {
       const res = await crearLicencia({ producto, cliente, tipo, duracion_dias: duracion, fecha_inicio, notas });
-      toast(`Licencia creada: ${res.license_key}`, 'ok');
+      const claveEmitida = res.license_key || res.licencia?.license_key || '';
+      toast(`Licencia creada: ${claveEmitida}`, 'ok');
     }
     cerrarModal();
     await cargarLicencias();
