@@ -49,8 +49,10 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
   - Exportación a CSV con formato BOM compatible con Excel.
   - Switch de activación/desactivación de productos.
 - **Corrección Auth Admin:** Script `07B-fix-admin-auth.sql` ejecutado exitosamente para activar `email_confirmed_at` y rol `admin`.
+- **Corrección Timeout 504 en `create-license`:** Se eliminó la llamada interna HTTP a `/auth/v1/user` dentro de la Edge Function, reemplazándola por decodificación local JWT + consulta a `public.usuarios` en Postgres. La emisión responde en <300ms.
+- **Corrección Toast Frontend:** `src/pages/licencias.js` ajustado para extraer `res.licencia.license_key`.
 - **Verificación de build:** `npm run build` compila 100% limpio en `dist/`.
-- **Verificación de Login:** El usuario inició sesión correctamente en `http://localhost:3000`.
+- **Verificación End-to-End:** El usuario creó exitosamente licencias desde el panel web.
 
 ### Pendientes Próximos
 
