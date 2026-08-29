@@ -253,6 +253,20 @@ p  { color: var(--text-secondary); }
 .input::placeholder { color: var(--text-muted); }
 .select option { background: var(--bg-elevated); }
 
+/* Estilo para el icono de almanaque en campos date */
+input[type="date"] {
+  color-scheme: dark;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(350deg);
+  opacity: 0.9;
+  transition: opacity var(--dur) var(--ease);
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
 /* ── Botones ─────────────────────────────────────────────── */
 .btn {
   display: inline-flex;

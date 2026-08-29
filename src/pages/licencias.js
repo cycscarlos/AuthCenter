@@ -149,7 +149,7 @@ document.getElementById('tabla-body').addEventListener('click', async (e) => {
   const id = btn.dataset.id;
 
   if (btn.classList.contains('btn-editar')) {
-    const lic = todasLicencias.find(l => l.id === id);
+    const lic = todasLicencias.find(l => String(l.id) === String(id));
     if (lic) abrirModalEditar(lic);
   }
 
@@ -171,7 +171,7 @@ document.getElementById('tabla-body').addEventListener('click', async (e) => {
   }
 
   if (btn.classList.contains('btn-eliminar')) {
-    const lic = todasLicencias.find(l => l.id === id);
+    const lic = todasLicencias.find(l => String(l.id) === String(id));
     if (!confirm(`¿Eliminar definitivamente la licencia de "${lic?.cliente}"? Esta acción no se puede deshacer.`)) return;
     try {
       await eliminarLicencia(id);
