@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuthCenter — Licencias</title>
+  <meta name="description" content="Gestión de licencias del emisor central AuthCenter." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar__logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="16" height="16" rx="4" fill="currentColor" opacity=".15"/>
+        <path d="M10 4.5L14.5 7v6L10 15.5 5.5 13V7L10 4.5z" stroke="currentColor" stroke-width="1.4" fill="none"/>
+        <circle cx="10" cy="10" r="1.8" fill="currentColor"/>
+      </svg>
+      Auth<span>Center</span>
+    </div>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__user">
+      <span id="topbar-email" class="text-muted"></span>
+      <button id="btn-logout" class="btn-logout">Salir</button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" aria-label="Navegación principal">
+    <a href="/panel/licencias.html" class="nav-item nav-item--active" id="nav-licencias">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="M3 9h18M7 13h2m4 0h2"/>
+      </svg>
+      Licencias
+    </a>
+    <a href="/panel/productos.html" class="nav-item" id="nav-productos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      Productos
+    </a>
+  </nav>
+
+  <!-- Contenido -->
+  <main class="main-content" id="main">
+
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;">
+      <h1>Licencias</h1>
+      <span id="total-badge" class="text-muted" style="font-size:.85rem;"></span>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card stat-card--gold">
+        <span class="stat-card__label">Activas</span>
+        <span class="stat-card__value" id="stat-activas">—</span>
+      </div>
+      <div class="stat-card stat-card--warn">
+        <span class="stat-card__label">Por expirar (7d)</span>
+        <span class="stat-card__value" id="stat-expiran">—</span>
+      </div>
+      <div class="stat-card stat-card--muted">
+        <span class="stat-card__label">Pendientes</span>
+        <span class="stat-card__value" id="stat-pendientes">—</span>
+      </div>
+      <div class="stat-card stat-card--error">
+        <span class="stat-card__label">Expiradas</span>
+        <span class="stat-card__value" id="stat-expiradas">—</span>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <select id="filtro-producto" class="select" aria-label="Filtrar por producto">
+        <option value="">Todos los productos</option>
+      </select>
+      <input
+        id="filtro-busqueda"
+        class="input"
+        type="search"
+        placeholder="Buscar cliente o clave…"
+        aria-label="Buscar licencias"
+        style="flex:1;min-width:180px;max-width:340px;"
+      />
+      <div style="flex:1"></div>
+      <button id="btn-exportar" class="btn btn--ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 15V3m0 12l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/></svg>
+        Exportar CSV
+      </button>
+      <button id="btn-nueva" class="btn btn--primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva licencia
+      </button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-wrap">
+      <table class="table" id="tabla-licencias" aria-label="Licencias">
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Clave</th>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Tipo</th>
+            <th>Inicio</th>
+            <th>Vence</th>
+            <th>Días</th>
+            <th class="sr-only">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body">
+          <tr><td colspan="9"><div class="empty-state"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal crear/editar licencia -->
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title" id="modal-title">Nueva licencia</h2>
+      <button class="btn-close" id="modal-close" aria-label="Cerrar modal">×</button>
+    </div>
+
+    <form id="form-licencia" class="form-grid" novalidate>
+      <input type="hidden" id="lic-id" />
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="lic-producto">Producto *</label>
+          <select id="lic-producto" class="select" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lic-tipo">Tipo *</label>
+          <select id="lic-tipo" class="select" required>
+            <option value="demo">Demo</option>
+            <option value="prueba">Prueba</option>
+            <option value="licencia" selected>Licencia</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="lic-cliente">Cliente *</label>
+        <input id="lic-cliente" class="input" type="text" placeholder="Nombre del cliente" required maxlength="200" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="lic-duracion">Duración (días) *</label>
+          <input id="lic-duracion" class="input" type="number" min="1" max="365" value="365" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lic-inicio">Fecha inicio</label>
+          <input id="lic-inicio" class="input" type="date" />
+          <span style="font-size:.75rem;color:var(--text-muted)">Vacío = pendiente de activar</span>
+        </div>
+      </div>
+
+      <div class="form-group" id="group-fin" style="display:none;">
+        <label class="form-label">Fecha fin calculada</label>
+        <input id="lic-fin-calc" class="input" type="text" readonly disabled />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="lic-notas">Notas</label>
+        <textarea id="lic-notas" class="input" placeholder="Observaciones opcionales…" maxlength="500"></textarea>
+      </div>
+
+      <div id="modal-error" class="login-error"></div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn--ghost" id="btn-cancelar">Cancelar</button>
+        <button type="submit" class="btn btn--primary" id="btn-guardar">Crear licencia</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toasts" aria-live="polite"></div>
+
+<script type="module" src="/src/pages/licencias.js"></script>
+</body>
+</html>

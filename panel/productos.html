@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuthCenter — Productos</title>
+  <meta name="description" content="Gestión de productos del emisor central AuthCenter." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar__logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="16" height="16" rx="4" fill="currentColor" opacity=".15"/>
+        <path d="M10 4.5L14.5 7v6L10 15.5 5.5 13V7L10 4.5z" stroke="currentColor" stroke-width="1.4" fill="none"/>
+        <circle cx="10" cy="10" r="1.8" fill="currentColor"/>
+      </svg>
+      Auth<span>Center</span>
+    </div>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__user">
+      <span id="topbar-email" class="text-muted"></span>
+      <button id="btn-logout" class="btn-logout">Salir</button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" aria-label="Navegación principal">
+    <a href="/panel/licencias.html" class="nav-item" id="nav-licencias">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="M3 9h18M7 13h2m4 0h2"/>
+      </svg>
+      Licencias
+    </a>
+    <a href="/panel/productos.html" class="nav-item nav-item--active" id="nav-productos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      Productos
+    </a>
+  </nav>
+
+  <!-- Contenido -->
+  <main class="main-content" id="main">
+
+    <div style="margin-bottom:1.5rem;">
+      <h1>Productos</h1>
+      <p style="margin-top:.4rem;font-size:.875rem;">
+        Alta de nuevos productos por SQL (ver <code style="color:var(--gold-400)">scripts/06-*.sql</code>).
+        Desde aquí puedes activar o desactivar un producto existente.
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table" id="tabla-productos" aria-label="Productos registrados">
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Registrado</th>
+            <th class="sr-only">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body">
+          <tr><td colspan="5"><div class="empty-state"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-container" id="toasts" aria-live="polite"></div>
+
+<script type="module" src="/src/pages/productos.js"></script>
+</body>
+</html>

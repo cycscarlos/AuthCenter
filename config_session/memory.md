@@ -6,15 +6,14 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 ## Stack decidido
 
-- **Panel:** Vanilla JS (ES modules) + Vite multi-página — scaffold pendiente (Fase 3 del plan).
+- **Panel:** Vanilla JS (ES modules) + Vite multi-página (`index.html`, `panel/licencias.html`, `panel/productos.html`).
 - **Backend:** proyecto Supabase DEDICADO nuevo (D1) + Edge Functions Deno.
-- **Deploy panel:** Vercel aparte (D2).
-- Hoy NO existe package.json ni build; verificación = revisión directa hasta el scaffold.
+- **Deploy panel:** Vercel aparte (D2), configurado con `vercel.json` y cabeceras CSP.
 
 ## Decisiones confirmadas por el usuario (25/08)
 
-- D1 Supabase dedicado — **CREADO 25/08 en la org alchemy** (junto a AutoStock; Supabase limitó Free a 2 proyectos/org y cycs quedó descartada). URL/anon key en poder del usuario.
-- D1b Repo GitHub "AuthCenter" creado; remote aún sin linkear/pushear localmente.
+- D1 Supabase dedicado — **CREADO 25/08 en la org alchemy** (REF `ijvevdplnovkewxifpmf`).
+- D1b Repo GitHub "AuthCenter" creado.
 - D2 Panel standalone en Vercel aparte.
 - D3 Tabla `productos` + `producto_id` FK; alta de productos por SQL.
 - D4 Un secreto por producto (`LICENSE_SECRET_AUTOSTOCK`, etc.), sin fallback, ≥32 chars.
@@ -22,55 +21,47 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - D6 Offline cliente: validar al iniciar + gracia 72 h + revalidación 24 h.
 - D7 Admins vía tabla `usuarios` del centro (patrón Gallos).
 
-## Plan maestro
+## Plan maestro y guías
 
-`docs/plan-emisor-central-licencias.md` — Fases 0–5 con complejidad/riesgo por tarea.
+- `docs/plan-emisor-central-licencias.md` — Plan maestro Fases 0–5.
+- `docs/guia-paso-a-paso-usuario.md` — Guía completa de validación y deploy.
+- `docs/tests-fase31-curls.md` — Comandos PowerShell E2E.
 
 ## Estado actual
 
-### Fase 0+1 COMPLETADA
-- Scripts SQL ejecutados en AuthCenter sin novedad: 01 productos+seed, 02 usuarios admins, 03 aut_licenses con producto_id FK, 04 rate limit.
+### Fase 0 + 1 + 2 + 2.5 COMPLETADAS
 
-### Fase 2 CÓDIGO COMPLETO (`c51efc9`, checkpoint previo `cdf97bd`)
-- Edge Functions multi-producto en `supabase/functions/`. `_shared/license-keys.ts` portado con `getLicenseSecret(producto)` → lee `LICENSE_SECRET_<CODIGO>` (sin fallback, ≥32 chars, regex PRODUCTO_RE). `_shared/distributed-rate-limit.ts` port exacto; `rate-limit.ts` y `sanitize.ts` slim (solo lo usado). `create-license`: JWT → admin vía tabla usuarios → producto existe+activo → secreto del producto → reintento 23505 → inserta con producto_id. `validate-license`: rechazo barato→caro (formato clave → formato producto → producto BD → secreto → HMAC → licencia verificando producto_id); estados nuevos `producto_invalido`/`producto_inactivo`; fail-closed 503. `config.toml`: 2 funciones verify_jwt=false. esbuild parse OK (6 TS).
+- BD (productos, usuarios, aut_licenses, rate_limits) y RLS activos.
+- Edge Functions (`create-license`, `validate-license`) desplegadas en `https://ijvevdplnovkewxifpmf.supabase.co`.
+- Secretos de AUTOSTOCK, MEDSTOCK, POSADAS configurados.
 
-### Fase 2.5 — Infraestructura de deploy (26/08)
-- **Admin creado:**
-  - Auth user: UUID `d830e483-1a13-490a-a2b7-018f75640fa8`, email `alchemy.zcoder@gmail.com`, confirmado.
-  - Fila en `public.usuarios`: rol `admin`, activo `true`.
-  - Metadata JWT actualizada: `{"email_verified": true, "rol": "admin"}` vía `scripts/05-update-meta-primer-admin.sql`.
-- **Supabase CLI:** instalada globalmente vía `npm install -g supabase` → v2.115.0 en PATH (`%APPDATA%\npm`).
-- **Proyecto linkeado:** `supabase link --project-ref ijvevdplnovkewxifpmf` (AuthCenter, org alchemy). Nota: hubo que limpiar directorio `.temp` ReadOnly antes de linkear.
-- **REF de AuthCenter:** `ijvevdplnovkewxifpmf` (org `aeqlcnsjliwequcshamf`).
+### Fase 3 — Panel Admin Standalone (COMPLETADA 28/08)
 
-### Fase 2.5 COMPLETADA — Deploy y tests (26/08)
-- **Secretos creados** via Dashboard UI (CLI dio 403 por permisos de org; el usuario es Owner pero el token CLI no los reflejaba; se resolvió con re-login + Dashboard como workaround):
-  - `LICENSE_SECRET_AUTOSTOCK` ✓
-  - `LICENSE_SECRET_MEDSTOCK` ✓
-  - `LICENSE_SECRET_POSADAS` ✓
-- **Edge Functions desplegadas** vía CLI tras re-login:
-  - `create-license` → `https://ijvevdplnovkewxifpmf.supabase.co/functions/v1/create-license`
-  - `validate-license` → `https://ijvevdplnovkewxifpmf.supabase.co/functions/v1/validate-license`
-- **Smoke tests validate-license** (todos OK):
-  - clave malformada → `formato_invalido` ✅
-  - producto fantasma → `producto_invalido` ✅
-  - firma falsa + AUTOSTOCK → `firma_invalida` ✅
-- **Probe RLS** (anon sobre `aut_licenses`): `401 permission denied` ✅
+- **Scaffold Vite multi-página:** Creado y estructurado con `index.html` (login), `/panel/licencias.html` y `/panel/productos.html`.
+- **Diseño CSS:** Sistema de diseño oscuro con acentos dorados ámbar, componentes responsivos, badges de estado, stat-cards y modales.
+- **Capa de datos y Auth:** `src/lib/` (`supabase.js`, `auth.js`, `api.js`, `escape.js`).
+- **Funcionalidades:**
+  - Login de admin verificado con Supabase Auth.
+  - Tabla de licencias con búsqueda y filtros por producto.
+  - Modales para crear/editar licencias con cálculo de fecha de expiración.
+  - Revocación/reactivación y eliminación de licencias.
+  - Copia de claves al portapapeles con 1-clic.
+  - Exportación a CSV con formato BOM compatible con Excel.
+  - Switch de activación/desactivación de productos.
+- **Corrección Auth Admin:** Script `07B-fix-admin-auth.sql` ejecutado exitosamente para activar `email_confirmed_at` y rol `admin`.
+- **Verificación de build:** `npm run build` compila 100% limpio en `dist/`.
+- **Verificación de Login:** El usuario inició sesión correctamente en `http://localhost:3000`.
 
-### Pendiente (Fase 2 del proyecto)
-1. **Test create-license** con JWT de admin real (generar licencia para un producto y validarla).
-2. **Gallos-los-indios** como 4to producto: INSERT en `productos` + 4to secreto (pendiente del usuario).
-3. **Pendiente externo:** issue en AutoStock — tabla mal creada (aut_licenses, accidente 25/08). Script de limpieza en repo de Gallos (`scripts/AUTOSTOCK-limpieza-aut_licenses.sql`); ejecutar en proyecto AUTOSTOCK antes de integrar ese cliente.
+### Pendientes Próximos
 
-> Plan de la Fase 2 documentado en `docs/plan-fase3-validacion-cierre.md`.
+1. **Gallos-los-indios (4to producto):** Ejecutar `scripts/06-galloslosindios-producto.sql` + fijar `LICENSE_SECRET_GALLOSLOSINDIOS`.
+2. **Deploy en Vercel:** Conectar repo a Vercel con variables de entorno (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`).
+3. **Integración Clientes (Fase 4):** Conectar clientes (AutoStock primero).
+
+---
 
 ## Convenciones
 
 - Todo en español; prefijos commit: `fix:`, `feat:`, `checkpoint:`, `chore:`.
-- `docs/` y `config_session/` SÍ se versionan en este repo (decisión bootstrap: no repetir la pérdida de historial de planes de Gallos).
-- `.env` gitignoreado: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` cuando exista el panel.
-- Actualizar este `memory.md` al final de cada sesión.
-
-## Último Checkpoint
-
-- **(pendiente commit)** — checkpoint: fin de Fase 1 (infraestructura completa: BD + admin + CLI + secretos + deploy Edge Functions + smoke tests validate-license + RLS verificado + plan Fase 2 en docs/).
+- `docs/` y `config_session/` SÍ se versionan en este repo.
+- `.env` gitignoreado: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
