@@ -61,6 +61,12 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 3. ~~**Advertencia Supabase Security Advisor — RLS usa `user_metadata`:**~~ ✅ RESUELTO 01/09. Se ejecutó `00-backup-snapshot.sql` (backup) + `scripts/08-fix-rls-rol.sql` en Dashboard AuthCenter. Políticas `*_jwt` de `productos`, `aut_licenses` y `usuarios` ahora consultan la tabla `public.usuarios` vía funciones `SECURITY DEFINER` (`es_admin()`, `es_admin_o_soporte()`) evitando recursión y eliminando dependencia de `user_metadata` (fuente de verdad alineada con D7 y Edge Functions). Alerta Security Advisor resuelta.
 4. **Integración Clientes (Fase 4):** Conectar clientes (AutoStock primero).
 
+### Fase 4 — Integral Clientes (EN CURSO)
+
+- **4.1 Contrato `validate-license` ✅ 01/09:** `docs/contrato-validate-license.md` — request/response, 10 estados, códigos HTTP (429/405/503/500), rate limit 30/min, política de gracia offline D6.
+- **4.2 Adaptador cliente de referencia ✅ 01/09:** `docs/adaptador-cliente-referencia.md` — implementación JS (browser/Node) con caché + gracia 72 h + revalidación 24 h + tabla de acciones por estado.
+- **4.3 AutoStock:** PENDIENTE. Requiere acceder al repo hermano AutoStock (autorización explícita), conectar endpoint central, retirar licenciador anterior y rotar secretos commiteados.
+
 ### Nota sesión 01/09 (Vercel)
 
 - Al primer ingreso al dashboard desde el dominio Vercel apareció un 401 en la carga de licencias (spinner infinito). Se resolvió con un refresh: carrera de inicialización de sesión (localStorage de sesión es por origen; `localhost` ≠ dominio Vercel). La sesión quedó persistida tras el primer GET → bug latente de UX conocido, no de seguridad/RLS.
@@ -77,3 +83,4 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 - **checkpoint `2d7b125`** (01/09): "Actualización variables de entorno en vercel" — memoria actualizada (estado real: Gallos completado, env vars Vercel OK) + guía `docs/vercel-env-vars.md`. Punto base antes del fix de RLS (script 08).
 - **checkpoint fin de Fase 2.5/3 (`6d2248a`):** Fix RLS aplicado (`scripts/08-fix-rls-rol.sql`) + memoria. Alerta Security Advisor resuelta.
+- **checkpoint tareas 4.1/4.2 (`A DEFINIR`):** Contrato `validate-license` + adaptador cliente referencia en `docs/`. Fase 4 en curso.
