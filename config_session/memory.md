@@ -65,7 +65,7 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 - **4.1 Contrato `validate-license` ✅ 01/09:** `docs/contrato-validate-license.md` — request/response, 10 estados, códigos HTTP (429/405/503/500), rate limit 30/min, política de gracia offline D6.
 - **4.2 Adaptador cliente de referencia ✅ 01/09:** `docs/adaptador-cliente-referencia.md` — implementación JS (browser/Node) con caché + gracia 72 h + revalidación 24 h + tabla de acciones por estado.
-- **4.3 AutoStock:** PENDIENTE. Requiere acceder al repo hermano AutoStock (autorización explícita), conectar endpoint central, retirar licenciador anterior y rotar secretos commiteados.
+- **4.3 AutoStock:** EN CURSO 01/09. Plan `docs/plan-fase4-autostock.md` autorizado (migración completa + reemisión + acceso al repo). **Fase A implementada** en AutoStock (checkpoint `924a71b`): adaptador D6 `src/lib/authcenter-client.ts`, proxy sin BD local, `.env.example`, script ALTER caché. Build OK. Pendientes: ejecutar `scripts/alter-aut_licenses-cache-d6.sql` en Supabase AutoStock; autorizar Fases B-C-D.
 
 ### Nota sesión 01/09 (Vercel)
 
