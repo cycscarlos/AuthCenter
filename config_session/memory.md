@@ -65,7 +65,13 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 - **4.1 Contrato `validate-license` ✅ 01/09:** `docs/contrato-validate-license.md` — request/response, 10 estados, códigos HTTP (429/405/503/500), rate limit 30/min, política de gracia offline D6.
 - **4.2 Adaptador cliente de referencia ✅ 01/09:** `docs/adaptador-cliente-referencia.md` — implementación JS (browser/Node) con caché + gracia 72 h + revalidación 24 h + tabla de acciones por estado.
-- **4.3 AutoStock:** EN CURSO 01/09. Plan `docs/plan-fase4-autostock.md` autorizado (migración completa + reemisión + acceso al repo). **Fase A implementada** en AutoStock (checkpoint `924a71b`): adaptador D6 `src/lib/authcenter-client.ts`, proxy sin BD local, `.env.example`, script ALTER caché. Build OK. **Fase B implementada** (diseño opción A — endpoint de registro): `api/license/activate` reescrito valida contra centro, `api/license/status` nuevo, LicenseBanner y admin en solo lectura, página `/license` con formato 20 hex. ALTER SQL ejecutado por el usuario. **Fase C completada** (`67413c7`): retirado licenciador local (`api/admin/licenses/generate`, `scripts/generate-license.ts`, `src/lib/license.ts`); `tsconfig.json` excluye `docs/` del type-check (referencias `docs/MedStock-license` importan `@/lib/license`, inexistente). Build OK. **Fase D COMPLETADA 01/09:** checkpoint `69c1252`; plantilla `docs/resultado-fase4-autostock.md` cumplimentada y cerrada por conformidad del usuario. Licencia demo "Meteoro" (2 días) validada end-to-end a la primera.
+- **4.3 AutoStock ✅ COMPLETADA 01/09.** Plan `docs/plan-fase4-autostock.md` autorizado. **Fase A** (checkpoint `924a71b`): adaptador D6 `src/lib/authcenter-client.ts`, proxy sin BD local, `.env.example`, script ALTER caché. Build OK. **Fase B** (opción A — endpoint de registro): `api/license/activate` reescrito contra centro, `api/license/status`, LicenseBanner y admin solo lectura, `/license` con 20 hex. ALTER SQL ejecutado. **Fase C** (`67413c7`): retirado licenciador local (generador admin, CLI, `src/lib/license.ts`); `tsconfig` excluye `docs/`. **Fase D COMPLETADA 01/09** (checkpoint `69c1252`): plantilla `docs/resultado-fase4-autostock.md` cerrada conforme; licencia demo "Meteoro" (2 días) validada end-to-end a la primera.
+
+### Fase 4 — Decisión del usuario (01/09) sobre D.4 y Fase 4.4
+
+- **1) D.4 REPLANTEADO:** AutoStock, MedStock, Posadas y Gallos-los-indios están **en desarrollo, sin clientes reales**. Las licencias viejas **se ELIMINAN, no se convierten** (nada de backfill/reemisión). Cada producto arranca en blanco y se activa con claves nuevas del centro cuando corresponda.
+- **2) Fase 4.4 ampliada:** integrar al nuevo sistema AuthCenter **MedStock, Posadas y Gallos-los-indios** (los tres).
+- **3) Orden de trabajo:** ① MedStock → ② Posadas → ③ Gallos-los-indios.
 
 ### Nota sesión 01/09 (Vercel)
 
@@ -90,6 +96,8 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **checkpoint Fase D (`69c1252`):** plantilla `docs/resultado-fase4-autostock.md`.
 
 > **Reemisión D.4** pendiente cuando aplique (instalaciones existentes de AutoStock).
+
+> **ACTUALIZACIÓN 01/09:** D.4 replanteado — NO reemisión/conversión. Licencias viejas de todos los productos **se eliminan** (productos en desarrollo, sin clientes). Orden Fase 4.4: MedStock → Posadas → Gallos-los-indios.
 
 ---
 
