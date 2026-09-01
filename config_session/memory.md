@@ -65,7 +65,7 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 - **4.1 Contrato `validate-license` ✅ 01/09:** `docs/contrato-validate-license.md` — request/response, 10 estados, códigos HTTP (429/405/503/500), rate limit 30/min, política de gracia offline D6.
 - **4.2 Adaptador cliente de referencia ✅ 01/09:** `docs/adaptador-cliente-referencia.md` — implementación JS (browser/Node) con caché + gracia 72 h + revalidación 24 h + tabla de acciones por estado.
-- **4.3 AutoStock:** EN CURSO 01/09. Plan `docs/plan-fase4-autostock.md` autorizado (migración completa + reemisión + acceso al repo). **Fase A implementada** en AutoStock (checkpoint `924a71b`): adaptador D6 `src/lib/authcenter-client.ts`, proxy sin BD local, `.env.example`, script ALTER caché. Build OK. **Fase B implementada** (diseño opción A — endpoint de registro): `api/license/activate` reescrito valida contra centro, `api/license/status` nuevo, LicenseBanner y admin en solo lectura, página `/license` con formato 20 hex. ALTER SQL ejecutado por el usuario. Pendientes: Fase C (retirar generador local) autorizar, deploy Vercel con env vars, Fase D (reemisión).
+- **4.3 AutoStock:** EN CURSO 01/09. Plan `docs/plan-fase4-autostock.md` autorizado (migración completa + reemisión + acceso al repo). **Fase A implementada** en AutoStock (checkpoint `924a71b`): adaptador D6 `src/lib/authcenter-client.ts`, proxy sin BD local, `.env.example`, script ALTER caché. Build OK. **Fase B implementada** (diseño opción A — endpoint de registro): `api/license/activate` reescrito valida contra centro, `api/license/status` nuevo, LicenseBanner y admin en solo lectura, página `/license` con formato 20 hex. ALTER SQL ejecutado por el usuario. **Fase C completada** (`67413c7`): retirado licenciador local (`api/admin/licenses/generate`, `scripts/generate-license.ts`, `src/lib/license.ts`); `tsconfig.json` excluye `docs/` del type-check (referencias `docs/MedStock-license` importan `@/lib/license`, inexistente). Build OK. **Fase D EN CURSO:** checkpoint `69c1252`; plantilla de smoke test `docs/resultado-fase4-autostock.md` creada.
 
 ### Nota sesión 01/09 (Vercel)
 
@@ -86,3 +86,11 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **checkpoint tareas 4.1/4.2 (`668a370`):** Contrato `validate-license` + adaptador cliente referencia en `docs/`. Fase 4 en curso.
 - **Fase A AutoStock (`1d21fdd` en AutoStock):** adaptador D6 + proxy + SQL caché. Plan `05bfeb3` en este repo.
 - **Fase B AutoStock (`ec7c335` en AutoStock):** activación y estado contra centro.
+- **Fase C AutoStock (`67413c7` en AutoStock):** retirado licenciador local (generador admin, CLI, HMAC local). `tsconfig` excluye `docs/`.
+- **checkpoint Fase D (`69c1252`):** plantilla `docs/resultado-fase4-autostock.md`.
+
+### Fase D — Pasos pendientes del usuario (D.1/D.2 solo pueden ejecutarse manualmente)
+
+1. **D.1 Emitir licencia AUTOSTOCK**: en el panel AuthCenter → Licencias → "Nueva licencia" → producto **AUTOSTOCK**, tipo `licencia`, duración (p. ej. 365), fecha inicio hoy, cliente = nombre instalación. Copiar clave.
+2. **D.2 Env vars en Vercel (AutoStock)**: `NEXT_PUBLIC_AUTHCENTER_URL=http://localhost:54321/functions/v1` o el de Supabase AuthCenter en prod (`https://ijvevdplnovkewxifpmf.supabase.co/functions/v1`) y `NEXT_PUBLIC_AUTHCENTER_PRODUCTO=AUTOSTOCK`. Redeploy.
+3. **D.3 Smoke test**: completar `docs/resultado-fase4-autostock.md` paso a paso (instalar clave, gracia offline, revocar/reactivar).
