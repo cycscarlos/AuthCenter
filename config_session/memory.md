@@ -56,8 +56,8 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 ### Pendientes Próximos
 
-1. **Gallos-los-indios (4to producto):** Ejecutar `scripts/06-galloslosindios-producto.sql` + fijar `LICENSE_SECRET_GALLOSLOSINDIOS`.
-2. **Deploy en Vercel:** Conectar repo a Vercel con variables de entorno (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`).
+1. ~~**Gallos-los-indios (4to producto):**~~ ✅ COMPLETADO.
+2. **Deploy en Vercel:** Repo creado y código subido. **Faltan variables de entorno** (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) y redeploy.
 3. **Integración Clientes (Fase 4):** Conectar clientes (AutoStock primero).
 
 ---
