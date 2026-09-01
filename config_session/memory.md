@@ -57,8 +57,13 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 ### Pendientes Próximos
 
 1. ~~**Gallos-los-indios (4to producto):**~~ ✅ COMPLETADO.
-2. **Deploy en Vercel:** Repo creado y código subido. **Faltan variables de entorno** (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) y redeploy.
-3. **Integración Clientes (Fase 4):** Conectar clientes (AutoStock primero).
+2. ~~**Deploy en Vercel:**~~ ✅ COMPLETADO 01/09. Env vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) configuradas y redeploy OK. App accesible desde Vercel.
+3. ~~**Advertencia Supabase Security Advisor — RLS usa `user_metadata`:**~~ ✅ RESUELTO 01/09. Se ejecutó `00-backup-snapshot.sql` (backup) + `scripts/08-fix-rls-rol.sql` en Dashboard AuthCenter. Políticas `*_jwt` de `productos`, `aut_licenses` y `usuarios` ahora consultan la tabla `public.usuarios` vía funciones `SECURITY DEFINER` (`es_admin()`, `es_admin_o_soporte()`) evitando recursión y eliminando dependencia de `user_metadata` (fuente de verdad alineada con D7 y Edge Functions). Alerta Security Advisor resuelta.
+4. **Integración Clientes (Fase 4):** Conectar clientes (AutoStock primero).
+
+### Nota sesión 01/09 (Vercel)
+
+- Al primer ingreso al dashboard desde el dominio Vercel apareció un 401 en la carga de licencias (spinner infinito). Se resolvió con un refresh: carrera de inicialización de sesión (localStorage de sesión es por origen; `localhost` ≠ dominio Vercel). La sesión quedó persistida tras el primer GET → bug latente de UX conocido, no de seguridad/RLS.
 
 ---
 
@@ -67,3 +72,8 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - Todo en español; prefijos commit: `fix:`, `feat:`, `checkpoint:`, `chore:`.
 - `docs/` y `config_session/` SÍ se versionan en este repo.
 - `.env` gitignoreado: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+
+## Checkpoints
+
+- **checkpoint `2d7b125`** (01/09): "Actualización variables de entorno en vercel" — memoria actualizada (estado real: Gallos completado, env vars Vercel OK) + guía `docs/vercel-env-vars.md`. Punto base antes del fix de RLS (script 08).
+- **checkpoint fin de Fase 2.5/3 (`A DEFINIR`):** Fix RLS aplicado (`scripts/08-fix-rls-rol.sql`) + memoria. Commit de fin de fase pendiente al cerrar.
