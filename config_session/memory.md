@@ -65,7 +65,7 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 - **4.1 Contrato `validate-license` ✅ 01/09:** `docs/contrato-validate-license.md` — request/response, 10 estados, códigos HTTP (429/405/503/500), rate limit 30/min, política de gracia offline D6.
 - **4.2 Adaptador cliente de referencia ✅ 01/09:** `docs/adaptador-cliente-referencia.md` — implementación JS (browser/Node) con caché + gracia 72 h + revalidación 24 h + tabla de acciones por estado.
-- **4.3 AutoStock:** EN CURSO 01/09. Plan `docs/plan-fase4-autostock.md` autorizado (migración completa + reemisión + acceso al repo). **Fase A implementada** en AutoStock (checkpoint `924a71b`): adaptador D6 `src/lib/authcenter-client.ts`, proxy sin BD local, `.env.example`, script ALTER caché. Build OK. Pendientes: ejecutar `scripts/alter-aut_licenses-cache-d6.sql` en Supabase AutoStock; autorizar Fases B-C-D.
+- **4.3 AutoStock:** EN CURSO 01/09. Plan `docs/plan-fase4-autostock.md` autorizado (migración completa + reemisión + acceso al repo). **Fase A implementada** en AutoStock (checkpoint `924a71b`): adaptador D6 `src/lib/authcenter-client.ts`, proxy sin BD local, `.env.example`, script ALTER caché. Build OK. **Fase B implementada** (diseño opción A — endpoint de registro): `api/license/activate` reescrito valida contra centro, `api/license/status` nuevo, LicenseBanner y admin en solo lectura, página `/license` con formato 20 hex. ALTER SQL ejecutado por el usuario. Pendientes: Fase C (retirar generador local) autorizar, deploy Vercel con env vars, Fase D (reemisión).
 
 ### Nota sesión 01/09 (Vercel)
 
@@ -84,3 +84,5 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **checkpoint `2d7b125`** (01/09): "Actualización variables de entorno en vercel" — memoria actualizada (estado real: Gallos completado, env vars Vercel OK) + guía `docs/vercel-env-vars.md`. Punto base antes del fix de RLS (script 08).
 - **checkpoint fin de Fase 2.5/3 (`6d2248a`):** Fix RLS aplicado (`scripts/08-fix-rls-rol.sql`) + memoria. Alerta Security Advisor resuelta.
 - **checkpoint tareas 4.1/4.2 (`668a370`):** Contrato `validate-license` + adaptador cliente referencia en `docs/`. Fase 4 en curso.
+- **Fase A AutoStock (`1d21fdd` en AutoStock):** adaptador D6 + proxy + SQL caché. Plan `05bfeb3` en este repo.
+- **Fase B AutoStock (`ec7c335` en AutoStock):** activación y estado contra centro.
