@@ -76,4 +76,4 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 ## Checkpoints
 
 - **checkpoint `2d7b125`** (01/09): "Actualización variables de entorno en vercel" — memoria actualizada (estado real: Gallos completado, env vars Vercel OK) + guía `docs/vercel-env-vars.md`. Punto base antes del fix de RLS (script 08).
-- **checkpoint fin de Fase 2.5/3 (`A DEFINIR`):** Fix RLS aplicado (`scripts/08-fix-rls-rol.sql`) + memoria. Commit de fin de fase pendiente al cerrar.
+- **checkpoint fin de Fase 2.5/3 (`6d2248a`):** Fix RLS aplicado (`scripts/08-fix-rls-rol.sql`) + memoria. Alerta Security Advisor resuelta.
