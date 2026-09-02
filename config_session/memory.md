@@ -71,16 +71,16 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 - **1) D.4 REPLANTEADO:** AutoStock, MedStock, Posadas y Gallos-los-indios están **en desarrollo, sin clientes reales**. Las licencias viejas **se ELIMINAN, no se convierten** (nada de backfill/reemisión). Cada producto arranca en blanco y se activa con claves nuevas del centro cuando corresponda.
 - **2) Fase 4.4 ampliada:** integrar al nuevo sistema AuthCenter **MedStock, Posadas y Gallos-los-indios** (los tres).
-- **3) Orden de trabajo:** ① MedStock → ② Posadas → ③ Gallos-los-indios.
+- **3) Orden de trabajo:** ① MedStock → ② **Gallos-los-indios** → ③ Posadas. (Cambiado 02/09: Gallos antes que Posadas porque comparte stack Next.js+Supabase+Vercel con AutoStock/MedStock; Posadas tiene otro stack: MySQL + AlwaysData.net, fuera de Supabase/Vercel — caso especial y más complejo).
 
 ### Fase 4 — Orden permanente (guardada 02/09) para las próximas integraciones
 
 - **Grado de integración (obligatorio, igual que AutoStock):** ① adaptador D6 (caché + gracia 72 h + revalidación 24 h) contra `validate-license`, ② **retiro del licenciador local** (HMAC local, generador admin, CLI, tablas/claves viejas), ③ **emisión exclusiva desde el panel AuthCenter** (sin generación local).
 - **Cada aplicación pendiente (MedStock, Posadas, Gallos-los-indios) debe tener su propio plan de implementación** en `docs/`, similar a `docs/plan-fase4-autostock.md` (estructura fases A→D):
-  - `docs/plan-fase4-medstock.md` (siguiente)
+  - `docs/plan-fase4-medstock.md` ✅ (completado)
+  - `docs/plan-fase4-gallos.md` ✅ (plan redactado 02/09 — pendiente de ejecutar)
   - `docs/plan-fase4-posadas.md`
-  - `docs/plan-fase4-gallos.md`
-- **Orden de ejecución:** ① MedStock → ② Posadas → ③ Gallos-los-indios.
+- **Orden de ejecución:** ① MedStock ✅ → ② Gallos-los-indios → ③ Posadas.
 
 ### Fase 4.4-M — MedStock (Fases A, B, C y D COMPLETADAS 02/09)
 
@@ -118,7 +118,9 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 > **ACTUALIZACIÓN 01/09:** D.4 replanteado — NO reemisión/conversión. Licencias viejas de todos los productos **se eliminan** (productos en desarrollo, sin clientes). Orden Fase 4.4: MedStock → Posadas → Gallos-los-indios.
 
-> **PROGRESO FASE 4.4-M (02/09):** MedStock **COMPLETADO** end-to-end. Fases A–D terminadas (`4344bfc` plan; `59a375e`/`3f326ca`/`07a20b0` en MedStock; cierre `caca1b2` en este repo). Incidente D.3 resuelto por re-emisión (secreto). (Detalle en la sección "Fase 4.4-M" de este archivo.)
+> **PROGRESO FASE 4.4-M (02/09):** MedStock **COMPLETADO** end-to-end. Fases A–D terminadas (`4344bfc` plan; `59a375e`/`3f326ca`/`07a20b0` en MedStock; cierre `caca1b2` en este repo). Incidente D.3 resuelto por re-emisión (secreto). (Detalle en la sección "Fase 4.4-M" de este archivo).
+
+> **PLAN GALLOS (02/09):** orden cambiado — Gallos antes que Posadas. Plan `docs/plan-fase4-gallos.md` redactado (estructura A→D, mismo comportamiento que AutoStock/MedStock; Gallos es Vite/vanilla, no Next — caché D6 vía localStorage + enforcement en cliente). Pendiente de autorización por fase para ejecutar.
 
 ---
 
