@@ -78,7 +78,7 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **Grado de integración (obligatorio, igual que AutoStock):** ① adaptador D6 (caché + gracia 72 h + revalidación 24 h) contra `validate-license`, ② **retiro del licenciador local** (HMAC local, generador admin, CLI, tablas/claves viejas), ③ **emisión exclusiva desde el panel AuthCenter** (sin generación local).
 - **Cada aplicación pendiente (MedStock, Posadas, Gallos-los-indios) debe tener su propio plan de implementación** en `docs/`, similar a `docs/plan-fase4-autostock.md` (estructura fases A→D):
   - `docs/plan-fase4-medstock.md` ✅ (completado)
-  - `docs/plan-fase4-gallos.md` ✅ (plan redactado 02/09 — pendiente de ejecutar)
+  - `docs/plan-fase4-gallos.md` ✅ (en ejecución — Fase A y B completadas 02/09)
   - `docs/plan-fase4-posadas.md`
 - **Orden de ejecución:** ① MedStock ✅ → ② Gallos-los-indios → ③ Posadas.
 
@@ -91,6 +91,14 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **Fase D (completada 02/09):** producto MEDSTOCK ✓ + secreto `LICENSE_SECRET_MEDSTOCK` ✓ + deploy Vercel ✓ + smoke test end-to-end ✓ (plantilla `docs/resultado-fase4-medstock.md`). Licencia tipo "prueba", inicio 02-09-2026, duración 1 día, activada con éxito en MedStock.
 - **Incidente resuelto (D.3):** dos claves MEDSTOCK emitidas previamente devolvían `firma_invalida` en `validate-license` (secreto `LICENSE_SECRET_MEDSTOCK` distinto del usado al firmar / rotación puntual). Solución: **re-emitir** desde el panel AuthCenter. No se tocó código de AuthCenter. Deploy de MedStock verificado (ruta `admin/licenses/generate` ya no existe → 307 proxy guard; build limpio con `VERCEL_FORCE_NO_BUILD_CACHE=1`).
 - **D.4:** licencias viejas de MedStock **se eliminan** (en desarrollo, sin clientes).
+
+### Fase 4.4-G — Gallos-los-indios (Fases A y B COMPLETADAS 02/09)
+
+- Plan autorizado `docs/plan-fase4-gallos.md` (commit `4e05b7e`). **Gallos es Vanilla JS + Vite estático (NO Next.js)** — corrección a la memoria que lo asumía Next. Mismo comportamiento que AutoStock/MedStock, con caché D6 en `localStorage` (no tabla BD server-side) y enforcement en cliente (no middleware).
+- **Fase A** (`3b39d4f` en Gallos): `src/lib/authcenter-client.js` (adaptador D6 vanilla: `validarInstalacion`, `validarClaveIngresada`, `registrarLicenciaLocal`, `requireLicencia`) + `.env.example`. Build OK.
+- **Fase B** (`7698d3c` en Gallos): vista de activación `pages/admin/licencia.html` + `src/admin/licencia.js` (input 20 hex, validación remota, registro + caja de estado); banner `src/admin/shared/licence-banner.js` integrado en `admin-shell.js` (común a todas las páginas admin); `/admin/licencias` reformado a SOLO LECTURA (estado de la instalación vía D6, sin CRUD). CSS nuevo en `public/css/admin.css`. Build OK. Los enlaces de activación apuntan a `/pages/admin/licencia.html` (ruta Vite real, NO `/admin/...`).
+- **Pendiente:** Fase C (retirar emisor local `create-license` de Gallos + `_shared/license-keys.ts` + secreto `LICENSE_SECRET`) y Fase D (producto `GALLOS` ya creado + deploy Vercel + smoke test `docs/resultado-fase4-gallos.md`). `requireLicencia()` aún no enchufado duro a todas las rutas admin (solo banner informativo).
+- **D.4:** licencias viejas de Gallos **se eliminan** (en desarrollo, sin clientes).
 
 ### Nota sesión 01/09 (Vercel)
 
