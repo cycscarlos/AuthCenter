@@ -82,6 +82,16 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
   - `docs/plan-fase4-gallos.md`
 - **Orden de ejecución:** ① MedStock → ② Posadas → ③ Gallos-los-indios.
 
+### Fase 4.4-M — MedStock (Fases A, B y C COMPLETADAS 02/09; D preparada)
+
+- Plan autorizado `docs/plan-fase4-medstock.md` (commit `4344bfc`), mismo patrón/modelo que AutoStock sin variantes.
+- **Fase A** (`59a375e` en MedStock): adaptador D6 `src/lib/authcenter-client.ts` (producto MEDSTOCK) + guard `src/proxy.ts` vía `validarInstalacion()` + `.env.example` + `scripts/alter-aut_licenses-cache-d6.sql` (ADD `validado_en TIMESTAMPTZ`, `ultimo_estado TEXT`, `license_key VARCHAR(24)`). Build OK.
+- **Fase B** (`3f326ca` en MedStock): `status/route.ts`→`validarInstalacion`, `activate/route.ts`→`validarClaveIngresada()`+`registrarLicenciaLocal()`, `LicenseBanner` vía status, `license/page` 20 hex, `admin/licenses` SOLO LECTURA, `Sidebar` `dias_restantes`. Build OK.
+- **Fase C** (`07a20b0` en MedStock): eliminados `api/admin/licenses/generate`, `scripts/generate-license.ts`, `src/lib/license.ts` (HMAC local); retirado `LICENSE_SECRET`/`dev_license_secret_insecure` de `src/`; `tsconfig` excluye `docs/`. Build OK.
+- **Fase D (preparación):** producto MEDSTOCK ✓ en `scripts/01-productos.sql`; secreto `LICENSE_SECRET_MEDSTOCK` ✓ configurado; plantilla smoke test `docs/resultado-fase4-medstock.md` creada.
+- **Pendiente de MedStock (usuario):** ejecutar ALTER en Supabase MedStock (`rrngvryilxnzffciioao`), retirar `LICENSE_SECRET` de `.env.local`/Vercel, deploy Vercel con `NEXT_PUBLIC_AUTHCENTER_URL` + `NEXT_PUBLIC_AUTHCENTER_PRODUCTO=MEDSTOCK`, emitir licencia desde panel AuthCenter y correr smoke test D.3.
+- **D.4:** licencias viejas de MedStock **se eliminan** (en desarrollo, sin clientes).
+
 ### Nota sesión 01/09 (Vercel)
 
 - Al primer ingreso al dashboard desde el dominio Vercel apareció un 401 en la carga de licencias (spinner infinito). Se resolvió con un refresh: carrera de inicialización de sesión (localStorage de sesión es por origen; `localhost` ≠ dominio Vercel). La sesión quedó persistida tras el primer GET → bug latente de UX conocido, no de seguridad/RLS.
@@ -107,6 +117,8 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 > **Reemisión D.4** pendiente cuando aplique (instalaciones existentes de AutoStock).
 
 > **ACTUALIZACIÓN 01/09:** D.4 replanteado — NO reemisión/conversión. Licencias viejas de todos los productos **se eliminan** (productos en desarrollo, sin clientes). Orden Fase 4.4: MedStock → Posadas → Gallos-los-indios.
+
+> **PROGRESO FASE 4.4-M (02/09):** MedStock Fases A–C completadas (`4344bfc` plan; `59a375e`/`3f326ca`/`07a20b0` en MedStock), D en preparación. (Detalle en la sección "Fase 4.4-M" de este archivo.)
 
 ---
 
