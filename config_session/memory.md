@@ -73,6 +73,15 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **2) Fase 4.4 ampliada:** integrar al nuevo sistema AuthCenter **MedStock, Posadas y Gallos-los-indios** (los tres).
 - **3) Orden de trabajo:** ① MedStock → ② Posadas → ③ Gallos-los-indios.
 
+### Fase 4 — Orden permanente (guardada 02/09) para las próximas integraciones
+
+- **Grado de integración (obligatorio, igual que AutoStock):** ① adaptador D6 (caché + gracia 72 h + revalidación 24 h) contra `validate-license`, ② **retiro del licenciador local** (HMAC local, generador admin, CLI, tablas/claves viejas), ③ **emisión exclusiva desde el panel AuthCenter** (sin generación local).
+- **Cada aplicación pendiente (MedStock, Posadas, Gallos-los-indios) debe tener su propio plan de implementación** en `docs/`, similar a `docs/plan-fase4-autostock.md` (estructura fases A→D):
+  - `docs/plan-fase4-medstock.md` (siguiente)
+  - `docs/plan-fase4-posadas.md`
+  - `docs/plan-fase4-gallos.md`
+- **Orden de ejecución:** ① MedStock → ② Posadas → ③ Gallos-los-indios.
+
 ### Nota sesión 01/09 (Vercel)
 
 - Al primer ingreso al dashboard desde el dominio Vercel apareció un 401 en la carga de licencias (spinner infinito). Se resolvió con un refresh: carrera de inicialización de sesión (localStorage de sesión es por origen; `localhost` ≠ dominio Vercel). La sesión quedó persistida tras el primer GET → bug latente de UX conocido, no de seguridad/RLS.
