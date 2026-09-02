@@ -92,15 +92,23 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **Incidente resuelto (D.3):** dos claves MEDSTOCK emitidas previamente devolvían `firma_invalida` en `validate-license` (secreto `LICENSE_SECRET_MEDSTOCK` distinto del usado al firmar / rotación puntual). Solución: **re-emitir** desde el panel AuthCenter. No se tocó código de AuthCenter. Deploy de MedStock verificado (ruta `admin/licenses/generate` ya no existe → 307 proxy guard; build limpio con `VERCEL_FORCE_NO_BUILD_CACHE=1`).
 - **D.4:** licencias viejas de MedStock **se eliminan** (en desarrollo, sin clientes).
 
-### Fase 4.4-G — Gallos-los-indios (Fases A y B COMPLETADAS 02/09)
+### Fase 4.4-G — Gallos-los-indios (COMPLETADA técnicamente 02/09; UI/UX pendiente de pulir)
 
 - Plan autorizado `docs/plan-fase4-gallos.md` (commit `4e05b7e`). **Gallos es Vanilla JS + Vite estático (NO Next.js)** — corrección a la memoria que lo asumía Next. Mismo comportamiento que AutoStock/MedStock, con caché D6 en `localStorage` (no tabla BD server-side) y enforcement en cliente (no middleware).
 - **Fase A** (`3b39d4f` en Gallos): `src/lib/authcenter-client.js` (adaptador D6 vanilla: `validarInstalacion`, `validarClaveIngresada`, `registrarLicenciaLocal`, `requireLicencia`) + `.env.example`. Build OK.
 - **Fase B** (`7698d3c` en Gallos): vista de activación `pages/admin/licencia.html` + `src/admin/licencia.js` (input 20 hex, validación remota, registro + caja de estado); banner `src/admin/shared/licence-banner.js` integrado en `admin-shell.js` (común a todas las páginas admin); `/admin/licencias` reformado a SOLO LECTURA (estado de la instalación vía D6, sin CRUD). CSS nuevo en `public/css/admin.css`. Build OK. Los enlaces de activación apuntan a `/pages/admin/licencia.html` (ruta Vite real, NO `/admin/...`).
 - **Fase C** (`4d559a7` en Gallos): retirado el licenciador local del repo — eliminadas `supabase/functions/create-license/`, `supabase/functions/validate-license/` (interno Gallos) y `_shared/license-keys.ts`; removido el bloque `licencias` de `src/lib/api.js` (CRUD `aut_licenses` + `generar()`→`create-license`). Build OK. **Pendiente de ejecutar por el usuario en Supabase/Vercel:** retirar/deprecar las edge functions desplegadas, quitar secreto `LICENSE_SECRET` de Gallos, (opcional) `DROP TABLE aut_licenses`, deploy de Gallos en Vercel con `VITE_AUTHCENTER_URL` + `VITE_AUTHCENTER_PRODUCTO=GALLOS`.
-- **Pendiente:** Fase D (producto `GALLOS` ya creado + deploy Vercel + smoke test `docs/resultado-fase4-gallos.md`). `requireLicencia()` aún no enchufado duro a todas las rutas admin (solo banner informativo).
+- **Pendiente:** Fase D (producto `GALLOSLOSINDIOS` ya creado + deploy Vercel + smoke test `docs/resultado-fase4-gallos.md`). `requireLicencia()` aún no enchufado duro a todas las rutas admin (solo banner informativo).
 - **Enforcement duro (usuario 02/09):** Gallos adopta el mismo flujo que AutoStock/MedStock — sin licencia activa se muestra un **modal bloqueante "Activar Licencia"** y no se pasa hasta ingresar clave. Implementado en `licence-gate.js` (`garantizarLicencia()`) y aplicado a todas las páginas admin con `if (!ok) return;`. Pendiente de deploy + smoke test.
 - **D.4:** licencias viejas de Gallos **se eliminan** (en desarrollo, sin clientes).
+
+### Fase 4.4-G — ESTADO 02/09 (NOCHE): deploy OK, smoke test OK, UI/UX pendiente
+- **Commit `73ecc3d` en Gallos** (pusheado a `origin/main`): banner y sidebar alineados al patrón MedStock/AutoStock (countdown ámbar + "Licencia: N día(s)" en sidebar), **eliminada la página huérfana `/pages/admin/licencia.html`** (la activación queda SOLO en el MODAL del gate), y **fix de producto: fallback del adaptador = `GALLOSLOSINDIOS`** (no `GALLOS`). Se eliminaron de Vercel las env vars `VITE_AUTHCENTER_PRODUCTO` y `VITE_AUTHCENTER_URL`; el fallback del código funciona.
+- **Deploy Vercel:** el auto-deploy no disparó a la hora (posible Auto-Deployments pausado/webhook), pero el deploy final SÍ llegó y funcionó.
+- **Smoke test OK:** licencia de prueba `GALLOSLOSINDIOS` (1 día) activada correctamente desde el panel, banner y estado visibles. El emisor central AuthCenter queda validado para Gallos.
+- **PROBLEMA ABIERTO para mañana:** el usuario reporta que el **panel de Gallos quedó con "muchísimos problemas" de UI/UX** tras estos cambios (textual: "funcionó! pero tiene muchísimos problemas y estoy agotado → seguimos mañana"). **Prioridad: arreglar la interfaz/UX del panel admin de Gallos** sin tocar el módulo de licenciamiento (que ya funciona). Diagnosticar visualmente y corregir los detalles que el usuario irá señalando. Verificar siempre con `npm run build` en Gallos.
+- **Checklist Supabase de Gallos (Fase C) ya ejecutado por el usuario:** edge functions `create-license`/`validate-license` retiradas, secreto `LICENSE_SECRET` eliminado, `DROP TABLE aut_licenses` ejecutado (mesa antigua fuera). Todo limpio del lado Gallos/Supabase.
+- **Pendiente formal:** cerrar la plantilla `docs/resultado-fase4-gallos.md` cuando se valide la UI/UX (referencia: `docs/resultado-fase4-medstock.md`).
 
 ### Nota sesión 01/09 (Vercel)
 
