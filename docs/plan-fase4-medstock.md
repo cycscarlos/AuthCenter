@@ -1,7 +1,7 @@
 # Plan — Fase 4.4-MedStock: Integración de MedStock con AuthCenter
 
 **Fecha:** 02/09/2026
-**Estado:** EN EJECUCIÓN — fases A, B y C completadas (build OK); pendiente D.
+**Estado:** COMPLETADO — fases A, B, C y D terminadas (build OK + smoke test end-to-end cerrado).
 **Repos:** AuthCenter (emisor) ←→ MedStock (cliente, `../MedStock`)
 **Autorización:** usuario confirmó que MedStock debe integrarse con el **mismo patrón y modelo que AutoStock, sin variantes** (02/09). Orden Fase 4.4: ① MedStock → ② Posadas → ③ Gallos-los-indios.
 

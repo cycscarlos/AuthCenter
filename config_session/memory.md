@@ -82,14 +82,14 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
   - `docs/plan-fase4-gallos.md`
 - **Orden de ejecución:** ① MedStock → ② Posadas → ③ Gallos-los-indios.
 
-### Fase 4.4-M — MedStock (Fases A, B y C COMPLETADAS 02/09; D preparada)
+### Fase 4.4-M — MedStock (Fases A, B, C y D COMPLETADAS 02/09)
 
-- Plan autorizado `docs/plan-fase4-medstock.md` (commit `4344bfc`), mismo patrón/modelo que AutoStock sin variantes.
+- Plan autorizado `docs/plan-fase4-medstock.md` (commit `4344bfc`), mismo patrón/modelo que AutoStock sin variantes. Estado: COMPLETADO.
 - **Fase A** (`59a375e` en MedStock): adaptador D6 `src/lib/authcenter-client.ts` (producto MEDSTOCK) + guard `src/proxy.ts` vía `validarInstalacion()` + `.env.example` + `scripts/alter-aut_licenses-cache-d6.sql` (ADD `validado_en TIMESTAMPTZ`, `ultimo_estado TEXT`, `license_key VARCHAR(24)`). Build OK.
 - **Fase B** (`3f326ca` en MedStock): `status/route.ts`→`validarInstalacion`, `activate/route.ts`→`validarClaveIngresada()`+`registrarLicenciaLocal()`, `LicenseBanner` vía status, `license/page` 20 hex, `admin/licenses` SOLO LECTURA, `Sidebar` `dias_restantes`. Build OK.
 - **Fase C** (`07a20b0` en MedStock): eliminados `api/admin/licenses/generate`, `scripts/generate-license.ts`, `src/lib/license.ts` (HMAC local); retirado `LICENSE_SECRET`/`dev_license_secret_insecure` de `src/`; `tsconfig` excluye `docs/`. Build OK.
-- **Fase D (preparación):** producto MEDSTOCK ✓ en `scripts/01-productos.sql`; secreto `LICENSE_SECRET_MEDSTOCK` ✓ configurado; plantilla smoke test `docs/resultado-fase4-medstock.md` creada.
-- **Pendiente de MedStock (usuario):** ejecutar ALTER en Supabase MedStock (`rrngvryilxnzffciioao`), retirar `LICENSE_SECRET` de `.env.local`/Vercel, deploy Vercel con `NEXT_PUBLIC_AUTHCENTER_URL` + `NEXT_PUBLIC_AUTHCENTER_PRODUCTO=MEDSTOCK`, emitir licencia desde panel AuthCenter y correr smoke test D.3.
+- **Fase D (completada 02/09):** producto MEDSTOCK ✓ + secreto `LICENSE_SECRET_MEDSTOCK` ✓ + deploy Vercel ✓ + smoke test end-to-end ✓ (plantilla `docs/resultado-fase4-medstock.md`). Licencia tipo "prueba", inicio 02-09-2026, duración 1 día, activada con éxito en MedStock.
+- **Incidente resuelto (D.3):** dos claves MEDSTOCK emitidas previamente devolvían `firma_invalida` en `validate-license` (secreto `LICENSE_SECRET_MEDSTOCK` distinto del usado al firmar / rotación puntual). Solución: **re-emitir** desde el panel AuthCenter. No se tocó código de AuthCenter. Deploy de MedStock verificado (ruta `admin/licenses/generate` ya no existe → 307 proxy guard; build limpio con `VERCEL_FORCE_NO_BUILD_CACHE=1`).
 - **D.4:** licencias viejas de MedStock **se eliminan** (en desarrollo, sin clientes).
 
 ### Nota sesión 01/09 (Vercel)
@@ -118,7 +118,7 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 
 > **ACTUALIZACIÓN 01/09:** D.4 replanteado — NO reemisión/conversión. Licencias viejas de todos los productos **se eliminan** (productos en desarrollo, sin clientes). Orden Fase 4.4: MedStock → Posadas → Gallos-los-indios.
 
-> **PROGRESO FASE 4.4-M (02/09):** MedStock Fases A–C completadas (`4344bfc` plan; `59a375e`/`3f326ca`/`07a20b0` en MedStock), D en preparación. (Detalle en la sección "Fase 4.4-M" de este archivo.)
+> **PROGRESO FASE 4.4-M (02/09):** MedStock **COMPLETADO** end-to-end. Fases A–D terminadas (`4344bfc` plan; `59a375e`/`3f326ca`/`07a20b0` en MedStock; cierre `caca1b2` en este repo). Incidente D.3 resuelto por re-emisión (secreto). (Detalle en la sección "Fase 4.4-M" de este archivo.)
 
 ---
 
