@@ -102,13 +102,18 @@ Emisor central de licencias agnóstico y multi-producto (AutoStock, MedStock, Po
 - **Enforcement duro (usuario 02/09):** Gallos adopta el mismo flujo que AutoStock/MedStock — sin licencia activa se muestra un **modal bloqueante "Activar Licencia"** y no se pasa hasta ingresar clave. Implementado en `licence-gate.js` (`garantizarLicencia()`) y aplicado a todas las páginas admin con `if (!ok) return;`. Pendiente de deploy + smoke test.
 - **D.4:** licencias viejas de Gallos **se eliminan** (en desarrollo, sin clientes).
 
-### Fase 4.4-G — ESTADO 02/09 (NOCHE): deploy OK, smoke test OK, UI/UX pendiente
+### Fase 4.4-G — ESTADO 03/09: deploy OK, smoke test OK, 4 problemas UI/UX del panel RESUELTOS
 - **Commit `73ecc3d` en Gallos** (pusheado a `origin/main`): banner y sidebar alineados al patrón MedStock/AutoStock (countdown ámbar + "Licencia: N día(s)" en sidebar), **eliminada la página huérfana `/pages/admin/licencia.html`** (la activación queda SOLO en el MODAL del gate), y **fix de producto: fallback del adaptador = `GALLOSLOSINDIOS`** (no `GALLOS`). Se eliminaron de Vercel las env vars `VITE_AUTHCENTER_PRODUCTO` y `VITE_AUTHCENTER_URL`; el fallback del código funciona.
 - **Deploy Vercel:** el auto-deploy no disparó a la hora (posible Auto-Deployments pausado/webhook), pero el deploy final SÍ llegó y funcionó.
 - **Smoke test OK:** licencia de prueba `GALLOSLOSINDIOS` (1 día) activada correctamente desde el panel, banner y estado visibles. El emisor central AuthCenter queda validado para Gallos.
-- **PROBLEMA ABIERTO para mañana:** el usuario reporta que el **panel de Gallos quedó con "muchísimos problemas" de UI/UX** tras estos cambios (textual: "funcionó! pero tiene muchísimos problemas y estoy agotado → seguimos mañana"). **Prioridad: arreglar la interfaz/UX del panel admin de Gallos** sin tocar el módulo de licenciamiento (que ya funciona). Diagnosticar visualmente y corregir los detalles que el usuario irá señalando. Verificar siempre con `npm run build` en Gallos.
+- **RESUELTO 03/09 en Gallos (commit `7da9f25` + memoria `38b58b9`):** los 4 problemas de UI/UX del panel reportados por el usuario:
+  1. El topbar se veía ~30% más abajo → **causa**: `initLicenceBanner` hacía `prepend` del div `#licenceBanner` como primer hijo del `.admin-container`, ANTES del `<header class="admin-topbar">`; el banner empujaba el topbar (que usa `margin-top` negativo). **Fix: eliminar el banner** ⇒ topbar pegado al top.
+  2. El banner tapaba el header → resuelto al eliminar el banner.
+  3. `#sidebarLicencia` (contador en sidebar) → **SE CONSERVA** como única indicación persistente de expiración.
+  4. Se elimina el banner (preferencia del usuario por el sidebar).
+- **Refactor:** `licence-banner.js` → **`licence-sidebar.js`**, `initLicenceBanner()` → **`initLicenceSidebar()`** (solo actualiza el contador del sidebar, ya NO genera banner). CSS `.licence-banner` eliminado. Build OK (los commits aún sin pushear; push a cargo del usuario).
 - **Checklist Supabase de Gallos (Fase C) ya ejecutado por el usuario:** edge functions `create-license`/`validate-license` retiradas, secreto `LICENSE_SECRET` eliminado, `DROP TABLE aut_licenses` ejecutado (mesa antigua fuera). Todo limpio del lado Gallos/Supabase.
-- **Pendiente formal:** cerrar la plantilla `docs/resultado-fase4-gallos.md` cuando se valide la UI/UX (referencia: `docs/resultado-fase4-medstock.md`).
+- **Pendiente formal:** cerrar la plantilla `docs/resultado-fase4-gallos.md` cuando se valide la UI/UX final en producción (referencia: `docs/resultado-fase4-medstock.md`).
 
 ### Nota sesión 01/09 (Vercel)
 
