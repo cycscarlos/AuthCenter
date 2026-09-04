@@ -306,6 +306,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .btn--sm { padding: .35rem .7rem; font-size: .8rem; }
 .btn svg { width: 15px; height: 15px; }
+.btn--sm svg { width: 18px; height: 18px; }
 
 /* ── Tabla ───────────────────────────────────────────────── */
 .table-wrap {
@@ -376,7 +377,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   transition: color var(--dur) var(--ease);
 }
 .license-key:hover { color: var(--gold-100); }
-.license-key__icon { opacity: .5; }
+.license-key__icon { width: 16px; height: 16px; opacity: .5; }
 
 /* ── Modal ───────────────────────────────────────────────── */
 .modal-backdrop {
